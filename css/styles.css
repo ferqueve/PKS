@@ -1,0 +1,248 @@
+/* ===== Fuentes y colores temáticos ===== */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #fff9f9;
+}
+
+.brand-name {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #e85d75; /* rosa suave */
+}
+
+.navbar-kids {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    box-shadow: 0 4px 12px rgba(255, 150, 170, 0.2);
+}
+
+.navbar-kids .nav-link,
+.navbar-kids .navbar-brand {
+    color: #5a3a50 !important;
+    font-weight: 600;
+}
+
+.navbar-kids .nav-link:hover {
+    color: #e85d75 !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    border-radius: 0 0 2rem 2rem;
+    margin-top: -1rem;
+    padding: 3rem 1rem;
+}
+
+.hero-section h1 {
+    font-family: 'Comic Neue', cursive;
+    color: #5a3a50;
+    font-size: 2.5rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: #775a6a;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Títulos de sección */
+.section-title {
+    font-family: 'Comic Neue', cursive;
+    color: #e85d75;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #ff9a9e;
+    border-radius: 2px;
+}
+
+/* Estilos de formularios */
+.form-select-kids,
+.form-control-kids {
+    border-radius: 12px;
+    border: 2px solid #f8c6d0;
+    padding: 10px 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.form-select-kids:focus,
+.form-control-kids:focus {
+    border-color: #e85d75;
+    box-shadow: 0 0 0 3px rgba(232, 93, 117, 0.2);
+}
+
+/* Botones */
+.btn-discount {
+    background: linear-gradient(135deg, #ffd89b, #ff9a9e);
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    padding: 12px 24px;
+    color: #5a3a50;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-discount:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(255, 154, 158, 0.4);
+}
+
+.btn-outline-kids {
+    border-color: #e85d75;
+    color: #e85d75;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.btn-outline-kids:hover {
+    background-color: #e85d75;
+    color: white;
+}
+
+.btn-kids-primary {
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    color: #5a3a50;
+}
+
+.btn-kids-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(168, 237, 234, 0.4);
+}
+
+/* Cards de productos */
+.card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    height: 100%;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(232, 93, 117, 0.15);
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 4px solid #ffd89b;
+}
+
+.card-title {
+    font-family: 'Comic Neue', cursive;
+    font-size: 1.25rem;
+    color: #5a3a50;
+}
+
+.card-text .badge {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 50px;
+}
+
+.badge-offer {
+    background: linear-gradient(135deg, #ffd89b, #ff9a9e);
+    color: #5a3a50;
+    font-weight: 700;
+}
+
+.badge.bg-secondary {
+    background-color: #a8edea !important;
+    color: #5a3a50 !important;
+}
+
+.price-original {
+    text-decoration: line-through;
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.btn-buy {
+    border-radius: 50px;
+    font-weight: 700;
+    padding: 10px;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    border: none;
+    color: #5a3a50;
+    transition: all 0.3s;
+}
+
+.btn-buy:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(168, 237, 234, 0.4);
+}
+
+.btn-buy:disabled {
+    background: #f0f0f0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+    font-family: 'Comic Neue', cursive;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    color: #5a3a50;
+    font-weight: 600;
+}
+
+.text-kids {
+    color: #5a3a50;
+}
+
+/* Carrito */
+#cartItems .btn-danger {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    .section-title {
+        font-size: 1.75rem;
+    }
+}
