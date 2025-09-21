@@ -2,6 +2,7 @@
 const STORAGE_KEY_PRODUCTS = 'pksKidsProductos';
 const STORAGE_KEY_CART = 'pksKidsCarrito';
 const STORAGE_KEY_LAST_ID = 'pksKidsLastId';
+const STORAGE_KEY_WHATSAPP = 'pksKidsWhatsapp';
 
 // Credenciales de admin
 const ADMIN_USER = 'admin';
@@ -22,7 +23,7 @@ function getProducts() {
                 image: "img/1.png",
                 sold: false,
                 discount: 0,
-                createdAt: new Date().toISOString() // Fecha de creación
+                createdAt: new Date().toISOString()
             },
             {
                 id: 2,
@@ -97,11 +98,21 @@ function saveCart(cart) {
     localStorage.setItem(STORAGE_KEY_CART, JSON.stringify(cart));
 }
 
+// Obtener número de WhatsApp
+function getWhatsappNumber() {
+    return localStorage.getItem(STORAGE_KEY_WHATSAPP) || '+59895430818';
+}
+
+// Guardar número de WhatsApp
+function saveWhatsappNumber(number) {
+    localStorage.setItem(STORAGE_KEY_WHATSAPP, number);
+}
+
 // Variables globales
 let products = getProducts();
 let cart = getCart();
 
-// Renderizar productos (catálogo público)
+// Renderizar productos (catálogo público) — SIN botón de oferta
 function renderProducts(filteredProducts = products) {
     const container = document.getElementById('productsContainer');
     if (!container) return;
@@ -141,10 +152,7 @@ function renderProducts(filteredProducts = products) {
                                 data-id="${product.id}" ${product.sold || inCart ? 'disabled' : ''}>
                                 <i class="fas fa-shopping-cart"></i> ${inCart ? 'En carrito' : 'Agregar al carrito'}
                             </button>
-                            ${!product.sold && product.discount === 0 ? `
-                            <button class="btn btn-outline-warning btn-sm apply-discount-btn" data-id="${product.id}">
-                                <i class="fas fa-tag"></i> Aplicar 20% OFF
-                            </button>` : ''}
+                            <!-- Botón de oferta REMOVIDO del catálogo público -->
                         </div>
                     </div>
                 </div>
@@ -157,38 +165,6 @@ function renderProducts(filteredProducts = products) {
     // Asignar eventos de compra
     document.querySelectorAll('.btn-buy:not(.disabled)').forEach(button => {
         button.addEventListener('click', addToCart);
-    });
-
-    // Asignar eventos para aplicar descuento (protegido)
-    document.querySelectorAll('.apply-discount-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = parseInt(this.getAttribute('data-id'));
-            
-            Swal.fire({
-                title: '🔐 Aplicar Oferta',
-                text: 'Ingresa la contraseña de administrador para aplicar el 20% de descuento a este producto.',
-                input: 'password',
-                inputLabel: 'Contraseña',
-                inputPlaceholder: '••••••••',
-                showCancelButton: true,
-                confirmButtonText: 'Aplicar',
-                preConfirm: (password) => {
-                    if (password !== ADMIN_PASS) {
-                        Swal.showValidationMessage('❌ Contraseña incorrecta');
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const productIndex = products.findIndex(p => p.id === productId);
-                    if (productIndex !== -1) {
-                        products[productIndex].discount = 20;
-                        saveProducts(products);
-                        renderProducts();
-                        Swal.fire('✅ ¡Oferta aplicada!', '20% de descuento activado en este producto.', 'success');
-                    }
-                }
-            });
-        });
     });
 
     updateCartCount();
@@ -340,7 +316,7 @@ ${itemsList}%0A
 ¡Gracias! Espero su confirmación para vestir con amor a mi peque 🧸
             `.trim();
 
-            const whatsappNumber = '+59895430818';
+            const whatsappNumber = getWhatsappNumber();
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
             cart.forEach(cartItem => {
@@ -449,7 +425,6 @@ document.getElementById('adminLoginSubmit')?.addEventListener('click', () => {
     const pass = document.getElementById('adminPass').value;
 
     if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        // Cerrar login y abrir panel
         bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
         const panelModal = new bootstrap.Modal(document.getElementById('adminPanelModal'));
         renderAdminPanel();
@@ -463,9 +438,10 @@ document.getElementById('adminLoginSubmit')?.addEventListener('click', () => {
 function renderAdminPanel() {
     renderAdminProducts();
     renderOldProducts();
+    renderWhatsappSettings();
 }
 
-// Renderizar lista de productos en admin
+// Renderizar lista de productos en admin (CON botones de oferta y quitar descuento)
 function renderAdminProducts() {
     const container = document.getElementById('adminProductsList');
     if (!container) return;
@@ -489,11 +465,15 @@ function renderAdminProducts() {
                         <div class="d-grid gap-2">
                             ${!product.sold && product.discount === 0 ? `
                             <button class="btn btn-sm btn-warning admin-apply-discount" data-id="${product.id}">
-                                Aplicar 20% OFF
+                                <i class="fas fa-tag"></i> Aplicar 20% OFF
+                            </button>` : ''}
+                            ${!product.sold && product.discount > 0 ? `
+                            <button class="btn btn-sm btn-outline-secondary admin-remove-discount" data-id="${product.id}">
+                                <i class="fas fa-undo"></i> Quitar Descuento
                             </button>` : ''}
                             ${!product.sold ? `
                             <button class="btn btn-sm btn-outline-danger admin-delete-product" data-id="${product.id}">
-                                Eliminar
+                                <i class="fas fa-trash"></i> Eliminar
                             </button>` : ''}
                         </div>
                     </div>
@@ -502,7 +482,7 @@ function renderAdminProducts() {
         `;
     }).join('');
 
-    // Eventos para aplicar descuento
+    // Aplicar descuento
     document.querySelectorAll('.admin-apply-discount').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -511,12 +491,28 @@ function renderAdminProducts() {
                 products[index].discount = 20;
                 saveProducts(products);
                 renderAdminPanel();
+                renderProducts();
                 Swal.fire('✅ Oferta aplicada', '', 'success');
             }
         });
     });
 
-    // Eventos para eliminar producto (solo si no está vendido)
+    // Quitar descuento
+    document.querySelectorAll('.admin-remove-discount').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = parseInt(this.getAttribute('data-id'));
+            const index = products.findIndex(p => p.id === id);
+            if (index !== -1) {
+                products[index].discount = 0;
+                saveProducts(products);
+                renderAdminPanel();
+                renderProducts();
+                Swal.fire('ℹ️ Descuento removido', '', 'info');
+            }
+        });
+    });
+
+    // Eliminar producto
     document.querySelectorAll('.admin-delete-product').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -532,7 +528,7 @@ function renderAdminProducts() {
                     products = products.filter(p => p.id !== id);
                     saveProducts(products);
                     renderAdminPanel();
-                    renderProducts(); // Actualizar catálogo público
+                    renderProducts();
                     Swal.fire('Eliminado', 'Producto eliminado.', 'success');
                 }
             });
@@ -540,7 +536,7 @@ function renderAdminProducts() {
     });
 }
 
-// Renderizar productos antiguos (>30 días sin vender)
+// Renderizar productos antiguos
 function renderOldProducts() {
     const container = document.getElementById('oldProductsList');
     if (!container) return;
@@ -585,7 +581,7 @@ function renderOldProducts() {
         `;
     }).join('');
 
-    // Eventos para productos antiguos
+    // Aplicar 30% OFF
     document.querySelectorAll('.admin-apply-discount-old').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -600,6 +596,7 @@ function renderOldProducts() {
         });
     });
 
+    // Aplicar 50% OFF
     document.querySelectorAll('.admin-apply-liquidation').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -673,18 +670,15 @@ document.getElementById('addProductForm')?.addEventListener('submit', function(e
     const price = parseFloat(formData.get('price'));
     const imageId = parseInt(formData.get('imageId'));
 
-    // Validar
     if (!name || !category || isNaN(price) || isNaN(imageId)) {
         Swal.fire('Error', 'Completa todos los campos correctamente.', 'error');
         return;
     }
 
-    // Obtener nuevo ID
     let lastId = parseInt(localStorage.getItem(STORAGE_KEY_LAST_ID) || '0');
     lastId++;
     localStorage.setItem(STORAGE_KEY_LAST_ID, lastId.toString());
 
-    // Crear nuevo producto
     const newProduct = {
         id: lastId,
         name,
@@ -701,11 +695,38 @@ document.getElementById('addProductForm')?.addEventListener('submit', function(e
     renderAdminPanel();
     renderProducts();
 
-    // Resetear formulario
     this.reset();
 
     Swal.fire('✅ Producto agregado', `¡${name} está listo para venderse!`, 'success');
 });
+
+// Renderizar configuración de WhatsApp
+function renderWhatsappSettings() {
+    const currentNumber = getWhatsappNumber();
+    const displayElement = document.getElementById('currentWhatsappNumber');
+    if (displayElement) {
+        displayElement.textContent = currentNumber;
+    }
+
+    const form = document.getElementById('whatsappConfigForm');
+    if (form) {
+        document.getElementById('whatsappNumber').value = currentNumber;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newNumber = document.getElementById('whatsappNumber').value.trim();
+
+            if (!newNumber.startsWith('+') || !/^\+\d{8,}$/.test(newNumber)) {
+                Swal.fire('Error', 'El número debe empezar con + y tener al menos 8 dígitos (ej: +59895430818).', 'error');
+                return;
+            }
+
+            saveWhatsappNumber(newNumber);
+            renderWhatsappSettings();
+            Swal.fire('✅ ¡Número actualizado!', `Los pedidos se enviarán a ${newNumber}`, 'success');
+        });
+    }
+}
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
