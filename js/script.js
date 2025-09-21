@@ -3,12 +3,46 @@ const STORAGE_KEY_PRODUCTS = 'pksKidsProductos';
 const STORAGE_KEY_CART = 'pksKidsCarrito';
 const STORAGE_KEY_LAST_ID = 'pksKidsLastId';
 const STORAGE_KEY_WHATSAPP = 'pksKidsWhatsapp';
+const STORAGE_KEY_SALES = 'pksKidsVentas';
+const STORAGE_KEY_STORE_CONFIG = 'pksKidsConfigTienda';
 
 // Credenciales de admin
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin123';
 
-// Obtener productos desde localStorage o inicializar
+// Obtener configuración de tienda
+function getStoreConfig() {
+    const saved = localStorage.getItem(STORAGE_KEY_STORE_CONFIG);
+    if (saved) {
+        return JSON.parse(saved);
+    } else {
+        const defaultConfig = {
+            name: "PKS Kids",
+            logo: "img/logo.png"
+        };
+        localStorage.setItem(STORAGE_KEY_STORE_CONFIG, JSON.stringify(defaultConfig));
+        return defaultConfig;
+    }
+}
+
+// Guardar configuración de tienda
+function saveStoreConfig(config) {
+    localStorage.setItem(STORAGE_KEY_STORE_CONFIG, JSON.stringify(config));
+    updateStoreUI(); // Actualizar UI inmediatamente
+}
+
+// Obtener historial de ventas
+function getSalesHistory() {
+    const saved = localStorage.getItem(STORAGE_KEY_SALES);
+    return saved ? JSON.parse(saved) : [];
+}
+
+// Guardar historial de ventas
+function saveSalesHistory(sales) {
+    localStorage.setItem(STORAGE_KEY_SALES, JSON.stringify(sales));
+}
+
+// Obtener productos
 function getProducts() {
     const saved = localStorage.getItem(STORAGE_KEY_PRODUCTS);
     if (saved) {
@@ -20,9 +54,10 @@ function getProducts() {
                 name: "Remera Dinosaurio",
                 category: "remeras",
                 price: 29.99,
-                image: "img/1.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Remera de algodón 100%, estampado de dinosaurio.",
                 createdAt: new Date().toISOString()
             },
             {
@@ -30,9 +65,10 @@ function getProducts() {
                 name: "Pantalón Estrellitas",
                 category: "pantalones",
                 price: 35.50,
-                image: "img/2.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Pantalón con estampado de estrellas, elástico en cintura.",
                 createdAt: new Date().toISOString()
             },
             {
@@ -40,9 +76,10 @@ function getProducts() {
                 name: "Conjunto Unicornio",
                 category: "conjuntos",
                 price: 79.90,
-                image: "img/3.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Conjunto de remera y pantalón con diseño de unicornio.",
                 createdAt: new Date().toISOString()
             },
             {
@@ -50,9 +87,10 @@ function getProducts() {
                 name: "Gorro de Oso",
                 category: "accesorios",
                 price: 22.99,
-                image: "img/4.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Gorro de invierno con orejas de oso, interior polar.",
                 createdAt: new Date().toISOString()
             },
             {
@@ -60,9 +98,10 @@ function getProducts() {
                 name: "Remera Superhéroe",
                 category: "remeras",
                 price: 32.99,
-                image: "img/5.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Remera con estampado de superhéroe, ideal para aventuras.",
                 createdAt: new Date().toISOString()
             },
             {
@@ -70,9 +109,10 @@ function getProducts() {
                 name: "Mochila de Princesa",
                 category: "accesorios",
                 price: 45.00,
-                image: "img/6.png",
+                image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
                 sold: false,
                 discount: 0,
+                description: "Mochila con diseño de princesa, compartimentos internos.",
                 createdAt: new Date().toISOString()
             }
         ];
@@ -87,7 +127,7 @@ function saveProducts(products) {
     localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
 }
 
-// Obtener carrito desde localStorage
+// Obtener carrito
 function getCart() {
     const saved = localStorage.getItem(STORAGE_KEY_CART);
     return saved ? JSON.parse(saved) : [];
@@ -98,12 +138,12 @@ function saveCart(cart) {
     localStorage.setItem(STORAGE_KEY_CART, JSON.stringify(cart));
 }
 
-// Obtener número de WhatsApp
+// Obtener WhatsApp
 function getWhatsappNumber() {
     return localStorage.getItem(STORAGE_KEY_WHATSAPP) || '+59895430818';
 }
 
-// Guardar número de WhatsApp
+// Guardar WhatsApp
 function saveWhatsappNumber(number) {
     localStorage.setItem(STORAGE_KEY_WHATSAPP, number);
 }
@@ -112,7 +152,17 @@ function saveWhatsappNumber(number) {
 let products = getProducts();
 let cart = getCart();
 
-// Renderizar productos (catálogo público) — SIN botón de oferta
+// Actualizar UI de tienda (nombre y logo)
+function updateStoreUI() {
+    const config = getStoreConfig();
+    const brandName = document.querySelector('.brand-name');
+    const logoImg = document.querySelector('.navbar-brand img');
+
+    if (brandName) brandName.textContent = config.name;
+    if (logoImg) logoImg.src = config.logo;
+}
+
+// Renderizar productos (catálogo público)
 function renderProducts(filteredProducts = products) {
     const container = document.getElementById('productsContainer');
     if (!container) return;
@@ -138,6 +188,7 @@ function renderProducts(filteredProducts = products) {
                 <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 250px; object-fit: cover;">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${product.name}</h5>
+                    ${product.description ? `<p class="text-muted small">${product.description}</p>` : ''}
                     <p class="card-text">
                         <span class="badge bg-secondary">${product.category}</span>
                         ${product.discount > 0 ? `<span class="badge badge-offer">-${product.discount}%</span>` : ''}
@@ -152,7 +203,6 @@ function renderProducts(filteredProducts = products) {
                                 data-id="${product.id}" ${product.sold || inCart ? 'disabled' : ''}>
                                 <i class="fas fa-shopping-cart"></i> ${inCart ? 'En carrito' : 'Agregar al carrito'}
                             </button>
-                            <!-- Botón de oferta REMOVIDO del catálogo público -->
                         </div>
                     </div>
                 </div>
@@ -162,7 +212,6 @@ function renderProducts(filteredProducts = products) {
         container.appendChild(card);
     });
 
-    // Asignar eventos de compra
     document.querySelectorAll('.btn-buy:not(.disabled)').forEach(button => {
         button.addEventListener('click', addToCart);
     });
@@ -193,7 +242,7 @@ function updateCartCount() {
     if (count) count.textContent = cart.length;
 }
 
-// Renderizar carrito en el modal
+// Renderizar carrito
 function renderCart() {
     const container = document.getElementById('cartItems');
     const totalElement = document.getElementById('cartTotal');
@@ -300,8 +349,9 @@ function checkout() {
                 return `• ${item.name} - $${finalPrice.toFixed(2)}`;
             }).join('%0A');
 
+            const config = getStoreConfig();
             const message = `
-Hola, quiero hacer un pedido en PKS Kids.%0A
+Hola, quiero hacer un pedido en ${config.name}.%0A
 %0A
 *DATOS DEL CLIENTE*%0A
 Nombre: ${name}%0A
@@ -319,6 +369,25 @@ ${itemsList}%0A
             const whatsappNumber = getWhatsappNumber();
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
+            // Registrar venta
+            const sale = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                customer: { name, address, phone },
+                items: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    discount: item.discount
+                })),
+                total: total
+            };
+
+            const salesHistory = getSalesHistory();
+            salesHistory.push(sale);
+            saveSalesHistory(salesHistory);
+
+            // Marcar productos como vendidos
             cart.forEach(cartItem => {
                 const index = products.findIndex(p => p.id === cartItem.id);
                 if (index !== -1) {
@@ -358,7 +427,7 @@ function filterProducts() {
     renderProducts(filtered);
 }
 
-// Restablecer filtros (protegido)
+// Restablecer filtros
 document.getElementById('resetFilters')?.addEventListener('click', () => {
     document.getElementById('categoryFilter').value = '';
     document.getElementById('minPrice').value = '';
@@ -439,9 +508,11 @@ function renderAdminPanel() {
     renderAdminProducts();
     renderOldProducts();
     renderWhatsappSettings();
+    renderSalesHistory();
+    renderStoreConfig();
 }
 
-// Renderizar lista de productos en admin (CON botones de oferta y quitar descuento)
+// Renderizar productos en admin
 function renderAdminProducts() {
     const container = document.getElementById('adminProductsList');
     if (!container) return;
@@ -454,6 +525,7 @@ function renderAdminProducts() {
                     <img src="${product.image}" class="card-img-top" style="height: 150px; object-fit: cover;">
                     <div class="card-body">
                         <h6 class="card-title">${product.name}</h6>
+                        ${product.description ? `<p class="text-muted small">${product.description}</p>` : ''}
                         <p class="card-text">
                             <small class="text-muted">Categoría: ${product.category}</small><br>
                             <strong>$${product.price.toFixed(2)}</strong>
@@ -562,6 +634,7 @@ function renderOldProducts() {
                     <img src="${product.image}" class="card-img-top" style="height: 150px; object-fit: cover;">
                     <div class="card-body">
                         <h6 class="card-title">${product.name}</h6>
+                        ${product.description ? `<p class="text-muted small">${product.description}</p>` : ''}
                         <p class="card-text">
                             <small class="text-muted">Días sin vender: ${daysOld}</small><br>
                             <strong>$${product.price.toFixed(2)}</strong>
@@ -612,7 +685,7 @@ function renderOldProducts() {
     });
 }
 
-// Aplicar descuento masivo a productos antiguos
+// Aplicar descuento masivo
 document.getElementById('applyDiscountToOld')?.addEventListener('click', () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -660,45 +733,97 @@ document.getElementById('applyLiquidationToOld')?.addEventListener('click', () =
     }
 });
 
-// Agregar nuevo producto
-document.getElementById('addProductForm')?.addEventListener('submit', function(e) {
+// Agregar nuevo producto (con imagen base64)
+document.getElementById('addProductForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const name = formData.get('name');
     const category = formData.get('category');
     const price = parseFloat(formData.get('price'));
-    const imageId = parseInt(formData.get('imageId'));
+    const description = formData.get('description') || '';
+    const imageFile = formData.get('productImage');
 
-    if (!name || !category || isNaN(price) || isNaN(imageId)) {
+    if (!name || !category || isNaN(price) || !imageFile) {
         Swal.fire('Error', 'Completa todos los campos correctamente.', 'error');
         return;
     }
 
-    let lastId = parseInt(localStorage.getItem(STORAGE_KEY_LAST_ID) || '0');
-    lastId++;
-    localStorage.setItem(STORAGE_KEY_LAST_ID, lastId.toString());
+    try {
+        const base64Image = await readFileAsBase64(imageFile);
 
-    const newProduct = {
-        id: lastId,
-        name,
-        category,
-        price,
-        image: `img/${imageId}.png`,
-        sold: false,
-        discount: 0,
-        createdAt: new Date().toISOString()
-    };
+        let lastId = parseInt(localStorage.getItem(STORAGE_KEY_LAST_ID) || '0');
+        lastId++;
+        localStorage.setItem(STORAGE_KEY_LAST_ID, lastId.toString());
 
-    products.push(newProduct);
-    saveProducts(products);
-    renderAdminPanel();
-    renderProducts();
+        const newProduct = {
+            id: lastId,
+            name,
+            category,
+            price,
+            image: base64Image,
+            sold: false,
+            discount: 0,
+            description: description,
+            createdAt: new Date().toISOString()
+        };
 
-    this.reset();
+        products.push(newProduct);
+        saveProducts(products);
+        renderAdminPanel();
+        renderProducts();
 
-    Swal.fire('✅ Producto agregado', `¡${name} está listo para venderse!`, 'success');
+        this.reset();
+
+        Swal.fire('✅ Producto agregado', `¡${name} está listo para venderse!`, 'success');
+    } catch (error) {
+        Swal.fire('Error', 'No se pudo leer la imagen. Intenta con otro archivo.', 'error');
+    }
 });
+
+// Función para leer archivo como base64
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Renderizar historial de ventas
+function renderSalesHistory() {
+    const container = document.getElementById('salesHistoryList');
+    if (!container) return;
+
+    const sales = getSalesHistory();
+
+    if (sales.length === 0) {
+        container.innerHTML = `<div class="alert alert-info">No hay ventas registradas aún.</div>`;
+        return;
+    }
+
+    container.innerHTML = sales.reverse().map(sale => {
+        const itemsList = sale.items.map(item => 
+            `<li>${item.name} - $${(item.price * (1 - item.discount/100)).toFixed(2)}</li>`
+        ).join('');
+
+        return `
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <strong>Venta #${sale.id}</strong> - ${sale.date}
+                </div>
+                <div class="card-body">
+                    <p><strong>Cliente:</strong> ${sale.customer.name}</p>
+                    <p><strong>Teléfono:</strong> ${sale.customer.phone}</p>
+                    <p><strong>Dirección:</strong> ${sale.customer.address}</p>
+                    <p><strong>Total:</strong> $${sale.total.toFixed(2)}</p>
+                    <ul>${itemsList}</ul>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
 // Renderizar configuración de WhatsApp
 function renderWhatsappSettings() {
@@ -717,7 +842,7 @@ function renderWhatsappSettings() {
             const newNumber = document.getElementById('whatsappNumber').value.trim();
 
             if (!newNumber.startsWith('+') || !/^\+\d{8,}$/.test(newNumber)) {
-                Swal.fire('Error', 'El número debe empezar con + y tener al menos 8 dígitos (ej: +59895430818).', 'error');
+                Swal.fire('Error', 'El número debe empezar con + y tener al menos 8 dígitos.', 'error');
                 return;
             }
 
@@ -728,8 +853,54 @@ function renderWhatsappSettings() {
     }
 }
 
+// Renderizar configuración de tienda
+function renderStoreConfig() {
+    const config = getStoreConfig();
+    const nameInput = document.getElementById('storeName');
+    const currentName = document.getElementById('currentStoreName');
+    const currentLogo = document.getElementById('currentStoreLogo');
+
+    if (nameInput) nameInput.value = config.name;
+    if (currentName) currentName.textContent = config.name;
+    if (currentLogo) currentLogo.src = config.logo;
+
+    const form = document.getElementById('storeConfigForm');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newName = document.getElementById('storeName').value.trim();
+            const logoFile = document.getElementById('storeLogo').files[0];
+
+            if (!newName) {
+                Swal.fire('Error', 'El nombre de la tienda es obligatorio.', 'error');
+                return;
+            }
+
+            let newLogo = config.logo;
+            if (logoFile) {
+                try {
+                    newLogo = await readFileAsBase64(logoFile);
+                } catch (error) {
+                    Swal.fire('Error', 'No se pudo leer el logo. Intenta con otro archivo.', 'error');
+                    return;
+                }
+            }
+
+            const newConfig = {
+                name: newName,
+                logo: newLogo
+            };
+
+            saveStoreConfig(newConfig);
+            Swal.fire('✅ ¡Configuración guardada!', 'La tienda ha sido actualizada.', 'success');
+        });
+    }
+}
+
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
+    updateStoreUI(); // Aplicar configuración de tienda al cargar
     renderProducts();
     updateCartCount();
 

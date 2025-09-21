@@ -2,24 +2,20 @@
 ---
 
 ## 🧪 ¿Cómo probar el prototipo?
-
-1. **Descarga o clona este proyecto** en tu computadora.
-2. **Coloca las imágenes** en la carpeta `/img` (deben llamarse `1.png`, `2.png`, etc.).
-3. **Abre `index.html`** en cualquier navegador moderno (Chrome, Firefox, Edge).
-4. **¡Listo!** Explora como cliente.
-5. **Accede al panel de admin**:
+1. **Visita el siguiente enlace** en tu computadora.
+![Visita la tienda](https://ferqueve.github.io/PKS)
+2. **¡Listo!** Explora como cliente.
+3. **Accede al panel de admin**:
    - Haz clic en “Admin” en el navbar.
    - Usuario: `admin`
    - Contraseña: `admin123`
    - Prueba agregar productos, aplicar descuentos o ver productos antiguos.
 
-> 💡 **Recomendado**: Usa **Live Server** (extensión de VS Code) para mejor experiencia.
-
 ---
 
 ## 📸 Vista Previa (Simulada)
 
-*(En una presentación real, aquí irían capturas de pantalla o un video demo)*
+*(Próximamente capturas de pantalla.)*
 
 - **Página principal**:  
   ![Catálogo](https://via.placeholder.com/800x400/fed6e3/5a3a50?text=PKS+Kids+-+Cat%C3%A1logo+Infantil)
@@ -61,7 +57,7 @@
 
 ## 📄 Licencia 
 
-Este prototipo es de código abierto y puede usarse libremente para fines educativos 
+
 ⭐ ¡Un like, estrella o comentario es siempre apreciado!
 
 ---
