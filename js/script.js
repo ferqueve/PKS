@@ -1,14 +1,32 @@
+// Detectar tipo de tienda
+const storeType = window.storeType || 'kids';
+
+// Prefijo para claves de localStorage
+const PREFIX = storeType === 'hogar' ? 'hogar_' : 'pksKids_';
+
 // Claves para localStorage
-const STORAGE_KEY_PRODUCTS = 'pksKidsProductos';
-const STORAGE_KEY_CART = 'pksKidsCarrito';
-const STORAGE_KEY_LAST_ID = 'pksKidsLastId';
-const STORAGE_KEY_WHATSAPP = 'pksKidsWhatsapp';
-const STORAGE_KEY_SALES = 'pksKidsVentas';
-const STORAGE_KEY_STORE_CONFIG = 'pksKidsConfigTienda';
+const STORAGE_KEY_PRODUCTS = PREFIX + 'Productos';
+const STORAGE_KEY_CART = PREFIX + 'Carrito';
+const STORAGE_KEY_LAST_ID = PREFIX + 'LastId';
+const STORAGE_KEY_WHATSAPP = PREFIX + 'Whatsapp';
+const STORAGE_KEY_SALES = PREFIX + 'Ventas';
+const STORAGE_KEY_STORE_CONFIG = PREFIX + 'ConfigTienda';
+const STORAGE_KEY_CLIENTS = PREFIX + 'Clientes';
 
 // Credenciales de admin
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin123';
+
+// Configuración por defecto según tienda
+function getDefaultStoreConfig() {
+    return storeType === 'hogar' ? {
+        name: "CrediHogar",
+        logo: "img/logo-hogar.png"
+    } : {
+        name: "PKS Kids",
+        logo: "img/logo.png"
+    };
+}
 
 // Obtener configuración de tienda
 function getStoreConfig() {
@@ -16,10 +34,7 @@ function getStoreConfig() {
     if (saved) {
         return JSON.parse(saved);
     } else {
-        const defaultConfig = {
-            name: "PKS Kids",
-            logo: "img/logo.png"
-        };
+        const defaultConfig = getDefaultStoreConfig();
         localStorage.setItem(STORAGE_KEY_STORE_CONFIG, JSON.stringify(defaultConfig));
         return defaultConfig;
     }
@@ -28,7 +43,18 @@ function getStoreConfig() {
 // Guardar configuración de tienda
 function saveStoreConfig(config) {
     localStorage.setItem(STORAGE_KEY_STORE_CONFIG, JSON.stringify(config));
-    updateStoreUI(); // Actualizar UI inmediatamente
+    updateStoreUI();
+}
+
+// Obtener clientes
+function getClients() {
+    const saved = localStorage.getItem(STORAGE_KEY_CLIENTS);
+    return saved ? JSON.parse(saved) : [];
+}
+
+// Guardar clientes
+function saveClients(clients) {
+    localStorage.setItem(STORAGE_KEY_CLIENTS, JSON.stringify(clients));
 }
 
 // Obtener historial de ventas
@@ -48,7 +74,129 @@ function getProducts() {
     if (saved) {
         return JSON.parse(saved);
     } else {
-        const initialProducts = [
+        // Productos iniciales según tienda — IMÁGENES LOCALES POR ID
+        const initialProducts = storeType === 'hogar' ? [
+            {
+                id: 1,
+                name: "Sofá 3 Plazas Tapizado",
+                category: "muebles",
+                price: 18990,
+                image: "img/1.png",
+                sold: false,
+                discount: 0,
+                description: "Sofá moderno de 3 plazas, tapizado en tela antimanchas. Incluye cojines decorativos.",
+                maxInstallments: 12,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2,
+                name: "Juego de Comedor 6 Sillas",
+                category: "muebles",
+                price: 24500,
+                image: "img/2.png",
+                sold: false,
+                discount: 0,
+                description: "Mesa de comedor de madera maciza con 6 sillas tapizadas. Ideal para reuniones familiares.",
+                maxInstallments: 12,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 3,
+                name: "Heladera No Frost 300L",
+                category: "electrodomesticos",
+                price: 22990,
+                image: "img/3.png",
+                sold: false,
+                discount: 0,
+                description: "Heladera No Frost de 300 litros, con freezer superior y sistema de ahorro de energía.",
+                maxInstallments: 12,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 4,
+                name: "Lavarropas Automático 8kg",
+                category: "electrodomesticos",
+                price: 19990,
+                image: "img/4.png",
+                sold: false,
+                discount: 0,
+                description: "Lavarropas automático con capacidad de 8 kg, 15 programas de lavado y temporizador digital.",
+                maxInstallments: 12,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 5,
+                name: "Juego de Ollas Acero Inoxidable",
+                category: "cocina",
+                price: 3490,
+                image: "img/5.png",
+                sold: false,
+                discount: 0,
+                description: "Juego de 5 ollas de acero inoxidable con tapas de vidrio. Aptas para todo tipo de cocinas.",
+                maxInstallments: 6,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 6,
+                name: "Cafetera Express",
+                category: "cocina",
+                price: 4290,
+                image: "img/6.png",
+                sold: false,
+                discount: 0,
+                description: "Cafetera express con molinillo integrado, vaporizador de leche y sistema de autolimpieza.",
+                maxInstallments: 6,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 7,
+                name: "Juego de Sábanas 2 Plazas",
+                category: "textiles",
+                price: 2890,
+                image: "img/7.png",
+                sold: false,
+                discount: 0,
+                description: "Juego de sábanas 100% algodón egipcio, 400 hilos. Incluye sábana ajustable, plana y 2 fundas.",
+                maxInstallments: 6,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 8,
+                name: "Cortinas Blackout 2.50m",
+                category: "textiles",
+                price: 1990,
+                image: "img/8.png",
+                sold: false,
+                discount: 0,
+                description: "Cortinas blackout de 2.50 metros de alto, bloquean el 99% de la luz. Incluyen rieles.",
+                maxInstallments: 3,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 9,
+                name: "Lámpara de Techo LED",
+                category: "decoracion",
+                price: 2490,
+                image: "img/9.png",
+                sold: false,
+                discount: 0,
+                description: "Lámpara de techo LED regulable, 3 modos de color (cálido, neutro, frío). Ahorro de energía.",
+                maxInstallments: 6,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 10,
+                name: "Espejo Decorativo 80x120cm",
+                category: "decoracion",
+                price: 3290,
+                image: "img/10.png",
+                sold: false,
+                discount: 0,
+                description: "Espejo decorativo con marco de madera envejecida. Medidas: 80x120 cm. Fácil instalación.",
+                maxInstallments: 6,
+                createdAt: new Date().toISOString()
+            }
+        ] : [
             {
                 id: 1,
                 name: "Remera Dinosaurio",
@@ -58,6 +206,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Remera de algodón 100%, estampado de dinosaurio.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             },
             {
@@ -69,6 +218,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Pantalón con estampado de estrellas, elástico en cintura.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             },
             {
@@ -80,6 +230,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Conjunto de remera y pantalón con diseño de unicornio.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             },
             {
@@ -91,6 +242,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Gorro de invierno con orejas de oso, interior polar.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             },
             {
@@ -102,6 +254,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Remera con estampado de superhéroe, ideal para aventuras.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             },
             {
@@ -113,6 +266,7 @@ function getProducts() {
                 sold: false,
                 discount: 0,
                 description: "Mochila con diseño de princesa, compartimentos internos.",
+                maxInstallments: 0,
                 createdAt: new Date().toISOString()
             }
         ];
@@ -152,7 +306,7 @@ function saveWhatsappNumber(number) {
 let products = getProducts();
 let cart = getCart();
 
-// Actualizar UI de tienda (nombre y logo)
+// Actualizar UI de tienda
 function updateStoreUI() {
     const config = getStoreConfig();
     const brandName = document.querySelector('.brand-name');
@@ -162,7 +316,7 @@ function updateStoreUI() {
     if (logoImg) logoImg.src = config.logo;
 }
 
-// Renderizar productos (catálogo público)
+// Renderizar productos
 function renderProducts(filteredProducts = products) {
     const container = document.getElementById('productsContainer');
     if (!container) return;
@@ -192,6 +346,7 @@ function renderProducts(filteredProducts = products) {
                     <p class="card-text">
                         <span class="badge bg-secondary">${product.category}</span>
                         ${product.discount > 0 ? `<span class="badge badge-offer">-${product.discount}%</span>` : ''}
+                        ${product.maxInstallments > 0 ? `<br><small class="text-success">✅ Hasta ${product.maxInstallments} cuotas sin recargo</small>` : ''}
                     </p>
                     <div class="mt-auto">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -264,6 +419,7 @@ function renderCart() {
                 <div>
                     <strong>${item.name}</strong><br>
                     $${finalPrice.toFixed(2)} ${item.discount > 0 ? `<small class="text-muted">(antes $${item.price.toFixed(2)})</small>` : ''}
+                    ${item.maxInstallments > 0 ? `<br><small class="text-success">Hasta ${item.maxInstallments} cuotas</small>` : ''}
                 </div>
                 <button class="btn btn-sm btn-danger" data-index="${index}">
                     <i class="fas fa-trash"></i>
@@ -289,13 +445,14 @@ function removeFromCart(event) {
     updateCartCount();
 }
 
-// Finalizar compra
+// Finalizar compra — ¡CORREGIDO PARA AMBAS TIENDAS!
 function checkout() {
     if (cart.length === 0) {
         Swal.fire('Carrito vacío', 'Agrega productos antes de finalizar.', 'warning');
         return;
     }
 
+    // Verificar productos vendidos
     const productsUpdated = getProducts();
     const unavailable = cart.filter(item => {
         const current = productsUpdated.find(p => p.id === item.id);
@@ -315,42 +472,166 @@ function checkout() {
         return;
     }
 
-    Swal.fire({
-        title: 'Finalizar Compra',
-        html: `
-            <input id="swal-name" class="swal2-input" placeholder="Nombre completo">
-            <input id="swal-address" class="swal2-input" placeholder="Dirección de envío">
-            <input id="swal-phone" class="swal2-input" placeholder="Teléfono (Ej: 099123456)">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Enviar pedido por WhatsApp',
-        cancelButtonText: 'Cancelar',
-        preConfirm: () => {
-            const name = document.getElementById('swal-name').value;
-            const address = document.getElementById('swal-address').value;
-            const phone = document.getElementById('swal-phone').value;
+    // 👇 CIERRA EL MODAL DEL CARRITO (ambas tiendas usan 'cartModal')
+    const cartModal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+    if (cartModal) {
+        cartModal.hide();
+    }
 
-            if (!name || !address || !phone) {
-                Swal.showValidationMessage('Por favor completa todos los campos');
-                return false;
+    // Esperar a que el modal se cierre
+    setTimeout(() => {
+        Swal.fire({
+            title: 'Finalizar Compra',
+            html: storeType === 'hogar' ? `
+                <input id="swal-name" class="swal2-input" placeholder="Nombre completo">
+                <input id="swal-address" class="swal2-input" placeholder="Dirección">
+                <input id="swal-phone" class="swal2-input" placeholder="Teléfono">
+                <input id="swal-city" class="swal2-input" placeholder="Ciudad">
+                <input id="swal-id" class="swal2-input" placeholder="Cédula">
+                <div class="mt-2">
+                    <label class="form-check-label">
+                        <input type="checkbox" id="swal-installments" class="form-check-input"> ¿Pagar en cuotas?
+                    </label>
+                </div>
+            ` : `
+                <input id="swal-name" class="swal2-input" placeholder="Nombre completo">
+                <input id="swal-address" class="swal2-input" placeholder="Dirección de envío">
+                <input id="swal-phone" class="swal2-input" placeholder="Teléfono (Ej: 099123456)">
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Enviar pedido por WhatsApp',
+            cancelButtonText: 'Cancelar',
+            didOpen: () => {
+                // 👇 FORZAR ENFOQUE EN EL PRIMER INPUT
+                const firstInput = document.getElementById('swal-name');
+                if (firstInput) {
+                    firstInput.focus();
+                    setTimeout(() => firstInput.focus(), 100);
+                }
+            },
+            preConfirm: () => {
+                if (storeType === 'hogar') {
+                    const name = document.getElementById('swal-name').value;
+                    const address = document.getElementById('swal-address').value;
+                    const phone = document.getElementById('swal-phone').value;
+                    const city = document.getElementById('swal-city').value;
+                    const id = document.getElementById('swal-id').value;
+                    const installments = document.getElementById('swal-installments').checked;
+
+                    if (!name || !address || !phone || !id) {
+                        Swal.showValidationMessage('Completa todos los campos');
+                        return false;
+                    }
+
+                    const clients = getClients();
+                    const client = clients.find(c => c.id === id);
+                    if (client && client.status === 'deudor' && installments) {
+                        Swal.showValidationMessage('⚠️ Este cliente tiene saldo deudor. No se recomienda vender en cuotas.');
+                        return false;
+                    }
+
+                    return { name, address, phone, city, id, installments };
+                } else {
+                    const name = document.getElementById('swal-name').value;
+                    const address = document.getElementById('swal-address').value;
+                    const phone = document.getElementById('swal-phone').value;
+
+                    if (!name || !address || !phone) {
+                        Swal.showValidationMessage('Por favor completa todos los campos');
+                        return false;
+                    }
+
+                    return { name, address, phone };
+                }
             }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (storeType === 'hogar') {
+                    const { name, address, phone, city, id, installments } = result.value;
 
-            return { name, address, phone };
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const { name, address, phone } = result.value;
+                    let clients = getClients();
+                    const existingClient = clients.find(c => c.id === id);
+                    if (!existingClient) {
+                        clients.push({
+                            id,
+                            name,
+                            address,
+                            phone,
+                            city,
+                            status: 'al_dia',
+                            createdAt: new Date().toISOString()
+                        });
+                        saveClients(clients);
+                    }
 
-            let total = 0;
-            const itemsList = cart.map(item => {
-                const finalPrice = item.price * (1 - item.discount / 100);
-                total += finalPrice;
-                return `• ${item.name} - $${finalPrice.toFixed(2)}`;
-            }).join('%0A');
+                    let total = 0;
+                    const itemsList = cart.map(item => {
+                        const finalPrice = item.price * (1 - item.discount / 100);
+                        total += finalPrice;
+                        return `• ${item.name} - $${finalPrice.toFixed(2)} ${item.maxInstallments > 0 && installments ? `(en ${Math.min(3, item.maxInstallments)} cuotas)` : ''}`;
+                    }).join('%0A');
 
-            const config = getStoreConfig();
-            const message = `
+                    const config = getStoreConfig();
+                    const message = `
+Hola, quiero hacer un pedido en ${config.name}.%0A
+%0A
+*DATOS DEL CLIENTE*%0A
+Nombre: ${name}%0A
+Cédula: ${id}%0A
+Dirección: ${address}%0A
+Ciudad: ${city}%0A
+Teléfono: ${phone}%0A
+%0A
+*PRODUCTOS*%0A
+${itemsList}%0A
+%0A
+*TOTAL: $${total.toFixed(2)}*%0A
+${installments ? '*PAGO EN CUOTAS*' : '*PAGO CONTADO*'}%0A
+%0A
+¡Gracias!
+                    `.trim();
+
+                    const whatsappNumber = getWhatsappNumber();
+                    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+                    const sale = {
+                        id: Date.now(),
+                        date: new Date().toLocaleString(),
+                        customer: { name, id, address, phone, city },
+                        items: cart.map(item => ({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                            discount: item.discount,
+                            maxInstallments: item.maxInstallments
+                        })),
+                        total: total,
+                        installments: installments
+                    };
+
+                    const salesHistory = getSalesHistory();
+                    salesHistory.push(sale);
+                    saveSalesHistory(salesHistory);
+
+                    cart.forEach(cartItem => {
+                        const index = products.findIndex(p => p.id === cartItem.id);
+                        if (index !== -1) {
+                            products[index].sold = true;
+                        }
+                    });
+                } else {
+                    const { name, address, phone } = result.value;
+
+                    let total = 0;
+                    const itemsList = cart.map(item => {
+                        const finalPrice = item.price * (1 - item.discount / 100);
+                        total += finalPrice;
+                        return `• ${item.name} - $${finalPrice.toFixed(2)}`;
+                    }).join('%0A');
+
+                    const config = getStoreConfig();
+                    const message = `
 Hola, quiero hacer un pedido en ${config.name}.%0A
 %0A
 *DATOS DEL CLIENTE*%0A
@@ -364,49 +645,38 @@ ${itemsList}%0A
 *TOTAL A PAGAR: $${total.toFixed(2)}*%0A
 %0A
 ¡Gracias! Espero su confirmación para vestir con amor a mi peque 🧸
-            `.trim();
+                    `.trim();
 
-            const whatsappNumber = getWhatsappNumber();
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                    const whatsappNumber = getWhatsappNumber();
+                    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-            // Registrar venta
-            const sale = {
-                id: Date.now(),
-                date: new Date().toLocaleString(),
-                customer: { name, address, phone },
-                items: cart.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    discount: item.discount
-                })),
-                total: total
-            };
-
-            const salesHistory = getSalesHistory();
-            salesHistory.push(sale);
-            saveSalesHistory(salesHistory);
-
-            // Marcar productos como vendidos
-            cart.forEach(cartItem => {
-                const index = products.findIndex(p => p.id === cartItem.id);
-                if (index !== -1) {
-                    products[index].sold = true;
+                    cart.forEach(cartItem => {
+                        const index = products.findIndex(p => p.id === cartItem.id);
+                        if (index !== -1) {
+                            products[index].sold = true;
+                        }
+                    });
                 }
-            });
 
-            saveProducts(products);
-            cart = [];
-            saveCart(cart);
+                saveProducts(products);
+                cart = [];
+                saveCart(cart);
 
-            renderProducts();
-            updateCartCount();
+                renderProducts();
+                updateCartCount();
 
-            window.open(whatsappUrl, '_blank');
+                window.open(whatsappUrl, '_blank');
 
-            Swal.fire('¡Pedido enviado!', 'Hemos abierto WhatsApp para que confirmes tu pedido.', 'success');
-        }
-    });
+                Swal.fire('¡Pedido enviado!', 'Hemos abierto WhatsApp para que confirmes tu pedido.', 'success');
+            } else {
+                setTimeout(() => {
+                    const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+                    renderCart();
+                    modal.show();
+                }, 300);
+            }
+        });
+    }, 300);
 }
 
 // Filtros
@@ -441,7 +711,7 @@ document.getElementById('resetFilters')?.addEventListener('click', () => {
         confirmButtonText: 'Sí, quitar descuentos',
         cancelButtonText: 'Cancelar',
         input: 'password',
-        inputLabel: 'Contraseña de administrador',
+        inputLabel: 'Contraseña',
         inputPlaceholder: 'Ingresa la contraseña',
         preConfirm: (password) => {
             if (password !== ADMIN_PASS) {
@@ -509,6 +779,7 @@ function renderAdminPanel() {
     renderOldProducts();
     renderWhatsappSettings();
     renderSalesHistory();
+    renderClients();
     renderStoreConfig();
 }
 
@@ -529,6 +800,7 @@ function renderAdminProducts() {
                         <p class="card-text">
                             <small class="text-muted">Categoría: ${product.category}</small><br>
                             <strong>$${product.price.toFixed(2)}</strong>
+                            ${product.maxInstallments > 0 ? `<br><small class="text-success">Cuotas: ${product.maxInstallments}</small>` : ''}
                             ${product.discount > 0 ? `<span class="badge bg-warning">-${product.discount}%</span>` : ''}
                             ${product.sold ? `<span class="badge bg-danger">VENDIDO</span>` : ''}
                             <br>
@@ -554,7 +826,7 @@ function renderAdminProducts() {
         `;
     }).join('');
 
-    // Aplicar descuento
+    // Eventos de descuento y eliminación
     document.querySelectorAll('.admin-apply-discount').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -569,7 +841,6 @@ function renderAdminProducts() {
         });
     });
 
-    // Quitar descuento
     document.querySelectorAll('.admin-remove-discount').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -584,7 +855,6 @@ function renderAdminProducts() {
         });
     });
 
-    // Eliminar producto
     document.querySelectorAll('.admin-delete-product').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -638,6 +908,7 @@ function renderOldProducts() {
                         <p class="card-text">
                             <small class="text-muted">Días sin vender: ${daysOld}</small><br>
                             <strong>$${product.price.toFixed(2)}</strong>
+                            ${product.maxInstallments > 0 ? `<br><small class="text-success">Cuotas: ${product.maxInstallments}</small>` : ''}
                             ${product.discount > 0 ? `<span class="badge bg-warning">-${product.discount}%</span>` : ''}
                         </p>
                         <div class="d-grid gap-2">
@@ -654,7 +925,7 @@ function renderOldProducts() {
         `;
     }).join('');
 
-    // Aplicar 30% OFF
+    // Eventos para descuentos
     document.querySelectorAll('.admin-apply-discount-old').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -669,7 +940,6 @@ function renderOldProducts() {
         });
     });
 
-    // Aplicar 50% OFF
     document.querySelectorAll('.admin-apply-liquidation').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = parseInt(this.getAttribute('data-id'));
@@ -733,7 +1003,7 @@ document.getElementById('applyLiquidationToOld')?.addEventListener('click', () =
     }
 });
 
-// Agregar nuevo producto (con imagen base64)
+// Agregar nuevo producto
 document.getElementById('addProductForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -741,6 +1011,7 @@ document.getElementById('addProductForm')?.addEventListener('submit', async func
     const name = formData.get('name');
     const category = formData.get('category');
     const price = parseFloat(formData.get('price'));
+    const maxInstallments = parseInt(formData.get('maxInstallments')) || 0;
     const description = formData.get('description') || '';
     const imageFile = formData.get('productImage');
 
@@ -765,6 +1036,7 @@ document.getElementById('addProductForm')?.addEventListener('submit', async func
             sold: false,
             discount: 0,
             description: description,
+            maxInstallments: maxInstallments,
             createdAt: new Date().toISOString()
         };
 
@@ -814,15 +1086,131 @@ function renderSalesHistory() {
                     <strong>Venta #${sale.id}</strong> - ${sale.date}
                 </div>
                 <div class="card-body">
-                    <p><strong>Cliente:</strong> ${sale.customer.name}</p>
+                    <p><strong>Cliente:</strong> ${sale.customer.name} (Cédula: ${sale.customer.id})</p>
                     <p><strong>Teléfono:</strong> ${sale.customer.phone}</p>
-                    <p><strong>Dirección:</strong> ${sale.customer.address}</p>
-                    <p><strong>Total:</strong> $${sale.total.toFixed(2)}</p>
+                    <p><strong>Dirección:</strong> ${sale.customer.address}, ${sale.customer.city}</p>
+                    <p><strong>Total:</strong> $${sale.total.toFixed(2)} ${sale.installments ? ' (en cuotas)' : ''}</p>
                     <ul>${itemsList}</ul>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// Renderizar clientes
+function renderClients() {
+    const container = document.getElementById('clientsList');
+    if (!container) return;
+
+    const clients = getClients();
+
+    if (clients.length === 0) {
+        container.innerHTML = `<div class="alert alert-info">No hay clientes registrados.</div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${clients.map(client => `
+                        <tr>
+                            <td>${client.id}</td>
+                            <td>${client.name}</td>
+                            <td>${client.phone}</td>
+                            <td>${client.city}</td>
+                            <td>
+                                <span class="badge ${client.status === 'al_dia' ? 'bg-success' : 'bg-warning'}">
+                                    ${client.status === 'al_dia' ? 'Al día' : 'Deudor'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary client-status-btn" data-id="${client.id}" data-status="${client.status}">
+                                    ${client.status === 'al_dia' ? 'Marcar como deudor' : 'Marcar como al día'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    // Evento para cambiar estado de cliente
+    document.querySelectorAll('.client-status-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const currentStatus = this.getAttribute('data-status');
+            const newStatus = currentStatus === 'al_dia' ? 'deudor' : 'al_dia';
+
+            let clients = getClients();
+            const clientIndex = clients.findIndex(c => c.id === id);
+            if (clientIndex !== -1) {
+                clients[clientIndex].status = newStatus;
+                saveClients(clients);
+                renderClients();
+                Swal.fire('✅ Estado actualizado', '', 'success');
+            }
+        });
+    });
+
+    // Botón para agregar cliente
+    document.getElementById('addClientBtn')?.addEventListener('click', () => {
+        Swal.fire({
+            title: 'Agregar Cliente',
+            html: `
+                <input id="swal-client-id" class="swal2-input" placeholder="Cédula" required>
+                <input id="swal-client-name" class="swal2-input" placeholder="Nombre completo" required>
+                <input id="swal-client-phone" class="swal2-input" placeholder="Teléfono" required>
+                <input id="swal-client-address" class="swal2-input" placeholder="Dirección" required>
+                <input id="swal-client-city" class="swal2-input" placeholder="Ciudad" required>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Agregar',
+            preConfirm: () => {
+                const id = document.getElementById('swal-client-id').value;
+                const name = document.getElementById('swal-client-name').value;
+                const phone = document.getElementById('swal-client-phone').value;
+                const address = document.getElementById('swal-client-address').value;
+                const city = document.getElementById('swal-client-city').value;
+
+                if (!id || !name || !phone || !address || !city) {
+                    Swal.showValidationMessage('Completa todos los campos');
+                    return false;
+                }
+
+                return { id, name, phone, address, city };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { id, name, phone, address, city } = result.value;
+                let clients = getClients();
+                clients.push({
+                    id,
+                    name,
+                    phone,
+                    address,
+                    city,
+                    status: 'al_dia',
+                    createdAt: new Date().toISOString()
+                });
+                saveClients(clients);
+                renderClients();
+                Swal.fire('✅ Cliente agregado', '', 'success');
+            }
+        });
+    });
 }
 
 // Renderizar configuración de WhatsApp
@@ -900,7 +1288,7 @@ function renderStoreConfig() {
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
-    updateStoreUI(); // Aplicar configuración de tienda al cargar
+    updateStoreUI();
     renderProducts();
     updateCartCount();
 
