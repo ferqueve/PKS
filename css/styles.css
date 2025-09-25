@@ -246,3 +246,24 @@ footer {
         font-size: 1.75rem;
     }
 }
+/* === Cartel de AGOTADO - Versión infantil === */
+.sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.9) 0%, rgba(243, 156, 18, 0.85) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.6rem;
+    z-index: 10;
+    border-radius: 16px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+    font-family: 'Comic Neue', cursive;
+    pointer-events: none;
+}
